@@ -1,13 +1,15 @@
-from database import SessionLocal
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database import SessionLocal
 
 
-def get_db():
+async def get_db() -> AsyncSession:
     db = SessionLocal()
     try:
         yield db
     finally:
-        db.close()
+        await db.close()
 
 
 DB_DEPENDENCY = Depends(get_db)
