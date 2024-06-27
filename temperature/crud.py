@@ -1,10 +1,12 @@
+import os
+
 import requests
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from city.models import City, Temperature
-
-API_KEY = "6b41fe81e64d4c3c833105754240406"
+from time import time
+API_KEY = os.environ.get("API_KEY")
 WEATHER_API_URL = "https://api.weatherapi.com/v1/current.json"
 
 
@@ -25,6 +27,7 @@ def update_temperatures(db: Session):
     cities = db.scalars(select(City)).fetchall()
     to_insert = []
     for city in cities:
+        print(city.name)
         temperature = get_weather(city.name)
         if temperature:
             if city.temperature:
