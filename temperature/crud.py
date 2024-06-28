@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 import aiohttp
 from sqlalchemy import select
@@ -7,19 +8,18 @@ from sqlalchemy.orm import joinedload
 
 from city.models import City, Temperature
 
-API_KEY = "6b41fe81e64d4c3c833105754240406"
+API_KEY = os.environ.get("WEATHER_API_KEY")
 WEATHER_API_URL = "https://api.weatherapi.com/v1/current.json"
 
 
 async def get_weather(city: str, session) -> int | None:
-    # async with session.get(WEATHER_API_URL, params={"key": API_KEY, "q": city}) as response:
-    #     if response.status != 200:
-    #         print(f"Error: Can't get data from Weather API for {city}.")
-    #         return
-    #
-    #     response = await response.json()
-    #     return response['current']['temp_c']
-    return 1
+    async with session.get(WEATHER_API_URL, params={"key": API_KEY, "q": city}) as response:
+        if response.status != 200:
+            print(f"Error: Can't get data from Weather API for {city}.")
+            return
+
+        response = await response.json()
+        return response['current']['temp_c']
 
 
 async def update_temperatures(db: AsyncSession):
